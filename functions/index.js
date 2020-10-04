@@ -19,10 +19,6 @@ app.get('/screems', (req, res) => {
         .catch(err => console.error(err));
 });
 
-
-app.post('')
-
-
 exports.createScream = functions.https.onRequest((req, res) => {
     if (req.method !== 'POST') {
         return res.status(400).json({
