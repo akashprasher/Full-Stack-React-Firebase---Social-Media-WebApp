@@ -24,20 +24,29 @@ exports.getScreams = functions.https.onRequest((req, res) => {
 });
 
 exports.createScream = functions.https.onRequest((req, res) => {
-   const newScream = {
-       body: req.body.body,
-       userHandle: req.body.userHandle,
-       createdAt: admin.firestore.Timestamp.fromDate(new Date())
-   };
+    if (req.method !== 'POST') {
+        return res.status(400).json({
+            message: 'Method should be POST only'
+        });
+    }
+    const newScream = {
+        body: req.body.body,
+        userHandle: req.body.userHandle,
+        createdAt: admin.firestore.Timestamp.fromDate(new Date())
+    };
 
-   admin.firestore()
+    admin.firestore()
         .collection('screams')
         .add(newScream)
         .then(doc => {
-            res.json({message: `document ${doc.id} is created)`})
+            res.json({
+                message: `document ${doc.id} is created)`
+            })
         })
         .catch(err => {
-            res.status(500).json({erroe: "Something went wrong"});  
+            res.status(500).json({
+                erroe: "Something went wrong"
+            });
             console.error(err);
         })
 });
