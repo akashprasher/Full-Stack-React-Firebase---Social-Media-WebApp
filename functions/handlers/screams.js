@@ -1,3 +1,4 @@
+const e = require('express');
 const { db } = require('../util/admin');
 
 // const config = require('../util/config');
@@ -33,16 +34,19 @@ exports.postOneScream = (req, res) => {
     const newScream = {
         body: req.body.body,
         userHandle: req.user.handle,
-        createdAt: new Date().toISOString()
+        userImage: req.user.imageUrl,
+        createdAt: new Date().toISOString(),
+        likeCount: 0,
+        commentCount: 0
     }
 
     db
         .collection('screams')
         .add(newScream)
-        .then(doc => {
-            res.json({
-                message: `document ${doc.id} is created`
-            })
+        .then((doc) => {
+            const resScream = newScream;
+            resScream.screamId = doc.id;
+            res.json(resScream);
         })
         .catch(err => {
             res.status(500).json({
@@ -92,6 +96,9 @@ exports.commentOnScream = (req, res) => {
         if(!doc.exists) {
             return res.status(404).json({error: "scream doesn't exists"});
         }
+        return doc.ref.update({commentCount: doc.data().commentCount + 1});
+    })
+    .then(() => {
         return db.collection('comments').add(newComment);
     })
     .then(() => {
@@ -103,3 +110,47 @@ exports.commentOnScream = (req, res) => {
     })
 
 }
+
+// like a scream
+exports.likeScream = (req, res) => {
+    const likeDocument = db.collection('likes').where('userHandle', '==', req.user.handle)
+    .where('screamId', "==", req.params.screamId).limit(1);
+
+    const screamDocument = db.doc(`/screams/${req.params.screamId}`);
+
+    let screamData = {};
+
+    screamDocument.get()
+    .then(doc => {
+        if(doc.exists) {
+            screamData = doc.data();
+            screamData.screamId = doc.id;
+            return likeDocument.get();
+        } else {
+            return res.status(404).json({error: 'scream not found'});
+        }
+    })
+    .then(data => {
+        if(data.empty) {
+            return db.collection('likes').add({
+                screamId: req.params.screamId,
+                userHandle: req.user.handle
+            })
+            .then(() => {
+                screamData.likeCount++;
+                return screamDocument.update({likeCount: screamData.likeCount});
+            })
+            .then(() => {
+                return res.json({screamData});
+            })
+        } else {
+            return res.status(400).json({ error: 'scream already liked' });
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        res.status(500).json({error: err.code});
+    })
+}
+
+
