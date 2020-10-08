@@ -44,6 +44,7 @@ exports.validateLoginData = (data) => {
     }
 }
 
+// User details like Bio/Location/Website
 exports.reduceUserDetails = (data) => {
     let userDetails = {};
     if(!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
