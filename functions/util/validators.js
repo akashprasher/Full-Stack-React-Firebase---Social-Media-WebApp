@@ -35,8 +35,8 @@ exports.validateSignupData = (data) => {
 exports.validateLoginData = (data) => {
     let errors = {};
 
-    if(isEmpty(data.email)) errors = 'Must not be empty';
-    if(isEmpty(data.password)) errors = 'Must not be empty';
+    if (isEmpty(data.email)) errors = 'Must not be empty';
+    if (isEmpty(data.password)) errors = 'Must not be empty';
 
     return {
         errors,
@@ -47,13 +47,13 @@ exports.validateLoginData = (data) => {
 // User details like Bio/Location/Website
 exports.reduceUserDetails = (data) => {
     let userDetails = {};
-    if(!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
-    if(!isEmpty(data.website.trim())) {
+    if (!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
+    if (!isEmpty(data.website.trim())) {
         // https://website.com
-        if(data.website.trim().substring(0, 4) !== 'http'){
+        if (data.website.trim().substring(0, 4) !== 'http') {
             userDetails.website = `http://${data.website.trim()}`;
         } else userDetails.website = data.website;
     }
-    if(!isEmpty(data.location.trim())) userDetails.loaction = data.location;
+    if (!isEmpty(data.location.trim())) userDetails.loaction = data.location;
     return userDetails;
 }
