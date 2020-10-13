@@ -4,7 +4,7 @@ const app = require('express')();
 
 const FBAuth = require('./util/fbAuth');
 
-const db = reture('./util/admin');
+const db = require('./util/admin');
 
 const {
     getAllScreams,
