@@ -131,30 +131,36 @@ exports.commentOnScream = (req, res) => {
 
 }
 
-// like a scream
+// Like a scream
 exports.likeScream = (req, res) => {
-    const likeDocument = db.collection('likes').where('userHandle', '==', req.user.handle)
-        .where('screamId', "==", req.params.screamId).limit(1);
+    const likeDocument = db
+        .collection('likes')
+        .where('userHandle', '==', req.user.handle)
+        .where('screamId', '==', req.params.screamId)
+        .limit(1);
 
     const screamDocument = db.doc(`/screams/${req.params.screamId}`);
 
-    let screamData = {};
+    let screamData;
 
-    screamDocument.get()
-        .then(doc => {
+    screamDocument
+        .get()
+        .then((doc) => {
             if (doc.exists) {
                 screamData = doc.data();
                 screamData.screamId = doc.id;
                 return likeDocument.get();
             } else {
                 return res.status(404).json({
-                    error: 'scream not found'
+                    error: 'Scream not found'
                 });
             }
         })
-        .then(data => {
+        .then((data) => {
             if (data.empty) {
-                return db.collection('likes').add({
+                return db
+                    .collection('likes')
+                    .add({
                         screamId: req.params.screamId,
                         userHandle: req.user.handle
                     })
@@ -165,23 +171,21 @@ exports.likeScream = (req, res) => {
                         });
                     })
                     .then(() => {
-                        return res.json({
-                            screamData
-                        });
-                    })
+                        return res.json(screamData);
+                    });
             } else {
                 return res.status(400).json({
-                    error: 'scream already liked'
+                    error: 'Scream already liked'
                 });
             }
         })
-        .catch(err => {
+        .catch((err) => {
             console.error(err);
             res.status(500).json({
                 error: err.code
             });
-        })
-}
+        });
+};
 
 
 // unlike a scream
