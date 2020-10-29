@@ -10,5 +10,6 @@ Full Stack React &amp; Firebase - Social Media WebApp.
 
 ##### Routes
 1. **Login**: *baseURL*/api/login
+2. **Signup**: *baseURL*/api/signup
 
 #### Work In Progress.
