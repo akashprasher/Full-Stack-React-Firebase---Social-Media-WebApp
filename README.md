@@ -8,4 +8,7 @@ Full Stack React &amp; Firebase - Social Media WebApp.
     4. Express js
     5. git/github
 
+##### Routes
+    1. **Login**: *baseURL*/api/login
+
 #### Work In Progress.
